@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    api-instance: {{ .Values.app-instance }}
+    version: {{ .Values.version }}
+spec:
+  replicas: {{ .Values.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app-instance: {{ .Values.app-instance }}
+      version: {{ .Values.version }}
+  template:
+    metadata:
+      labels:
+        app-instance: {{ .Values.app-instance }}
+        version: {{ .Values.version }}
+    spec:
+      containers:
+      - name: api
+        image: {{ .Values.name }}/{{.Values.image}}:{{.Values.image-tag}}
+        imagePullPolicy: Always
+        env:
+          - name: MONGO_CONN_STR
+            value: {{ .Values.connection-string }}
+          - name: MONGO_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-secret
+                key: username
+          - name: MONGO_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-secret
+                key: password
+        ports:
+        - containerPort: {{.Values.containerPort}}
+        livenessProbe:
+          httpGet:
+            path: /ok
+            port: {{.Values.containerPort}}
+          initialDelaySeconds: 2
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+             path: /ok
+             port: {{.Values.containerPort}}
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 1

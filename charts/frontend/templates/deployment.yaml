@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}
+  namespace:  {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/app-instance: {{ .Values.app-instance}}
+    app.kubernetes.io/version: {{ .Values.version }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app-instance: {{ .Values.app-instance}}
+      version: {{ .Values.version }}
+  template:
+    metadata:
+      labels:
+        app-instance: {{ .Values.app-instance}}
+        version: {{ .Values.version }}
+    spec:
+      containers:
+      - name: {{ .Values.name }}
+        image: {{.Values.repository}}/{{.Values.image}}:{{.Values.image-tag}}
+        imagePullPolicy: Always
+        env:
+          - name: REACT_APP_APIHOSTPORT
+            value: $API_ELB_PUBLIC_FQDN #add your API_Load_Balancer DNS manually here if app does not run
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /ok
+            port: 8080
+          initialDelaySeconds: 2
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+             path: /ok
+             port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 1

@@ -1,0 +1,8 @@
+namespace: devsecops
+name: mongodb
+app-instance: monogodb
+version: v1.0
+replicas: 2
+repository: devops-freelancer
+image: mongo
+image-tag: 4.2

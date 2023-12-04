@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/app-instance: {{ .Values.app-instance }}
+    app.kubernetes.io/version: {{ .Values.version }}
+    app.kubernetes.io/managed-by: {{ .Relapease.Service }}
+spec:
+  serviceName: {{ .Values.serviceName }}
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      db: {{ .Values.app-instance }}
+      version: {{ .Values.version }}
+  template:
+    metadata:
+      labels:
+        db: {{ .Values.app-instance }}
+        version: {{ .Values.version }}
+        replicaset: rs0.main
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: replicaset
+                      operator: In
+                      values:
+                        - rs0.main
+                topologyKey: kubernetes.io/hostname
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: {{ .Values.name }}
+        image: {{.Values.repository}}/{{.Values.image}}:{{.Values.image-tag}}
+          command:
+            - "numactl"
+            - "--interleave=all"
+            - "mongod"
+            - "--wiredTigerCacheSizeGB"
+            - "0.1"
+            - "--bind_ip"
+            - "0.0.0.0"
+            - "--replSet"
+            - "rs0"
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongodb-persistent-storage-claim
+              mountPath: /data/db
+  volumeClaimTemplates:
+    - metadata:
+        name: mongodb-persistent-storage-claim
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: gp2
+        resources:
+          requests:
+            storage: 0.5Gi
