@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: api
-        image: {{ .Values.name }}/{{.Values.image}}:{{.Values.image-tag}}
+        image: {{.Values.image }}
         imagePullPolicy: Always
         env:
           - name: MONGO_CONN_STR

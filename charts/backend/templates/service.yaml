@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: namespace: {{ .Values.name }}
+  name:  {{ .Values.serviceName }}
   namespace: {{ .Values.namespace }}
   labels:
     app.kubernetes.io/app-instance: {{ .Values.app-instance }}
@@ -13,4 +13,5 @@ spec:
     targetPort: 27017
   clusterIP: None
   selector:
-    role: db
+    db: {{ .Values.app-instance }}
+    version: {{ .Values.version }}

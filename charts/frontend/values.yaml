@@ -3,6 +3,4 @@ name: frontend
 app-instance: frontend-v1.0
 version: v1.0
 replicas: 2
-repository: devops-freelancer
-image: frontend
-image-tag: v1.0
+image: devops-freelancer/frontend:v1.0

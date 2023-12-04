@@ -3,8 +3,6 @@ name: api
 app-instance: go-api
 version: v1.0
 replicas: 2
-repository: devops-freelancer
-image: api
-image-tag: v3
+image: devops-freelancer/api:v3
 containerPort: 8080
 connection-string: mongodb://mongo-0.mongo,mongo-1.mongo,mongo-2.mongo:27017/langdb?replicaSet=rs0
