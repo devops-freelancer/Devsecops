@@ -1,6 +1,6 @@
-namespace: devsecops
-name: frontend
-app-instance: frontend-v1.0
+image: cloudacademydevops/frontend:v11
+containerport: 8080
+serviceport: 8080
+role: frontend
 version: v1.0
-replicas: 2
-image: devops-freelancer/frontend:v1.0
+namespace: app

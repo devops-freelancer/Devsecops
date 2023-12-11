@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: {{ .Values.namespace }}
+  labels:
+    role: {{ .Values.role }}
+    version: {{ .Values.version }}
+spec:
+  replicas: {{ .Values.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      role: {{ .Values.role }}
+      version: {{ .Values.version }}
+  template:
+    metadata:
+      labels:
+        role: {{ .Values.role }}
+        version: {{ .Values.version }}
+    spec:
+      containers:
+      - name: backend
+        image: {{.Values.image }}
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: MONGO_CONN_STR
+            value: "mongodb://mongo-0.mongo,mongo-1.mongo,mongo-2.mongo:27017/langdb?replicaSet=rs0"
+          - name: MONGO_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-secret
+                key: username
+          - name: MONGO_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-secret
+                key: password
+        ports:
+        - containerPort: {{ .Values.containerport }}
+        livenessProbe:
+          httpGet:
+            path: /ok
+            port: {{ .Values.containerport }}
+          initialDelaySeconds: 20
+          periodSeconds: 15
+        readinessProbe:
+          httpGet:
+             path: /ok
+             port: {{ .Values.containerport }}
+          initialDelaySeconds: 15
+          periodSeconds: 15
+          successThreshold: 1
