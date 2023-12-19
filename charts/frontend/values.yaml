@@ -1,6 +1,15 @@
+
 image: cloudacademydevops/frontend:v11
 containerport: 8080
 serviceport: 8080
 role: frontend
 version: v1.0
 namespace: app
+
+# Istio values.yaml
+name: frontend
+subset1: blue
+subset2: green
+version2: v2.0
+weight1: 90
+weight2: 10
