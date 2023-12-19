@@ -1,0 +1,19 @@
+#Imperative command to create service to expose frontend deployment 
+# kubectl expose deploy api  --name=api --type=LoadBalancer  --port=80  --target-port=8080 --namespace=microservice
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: {{ .Values.namespace }}
+  labels:
+    role: {{ .Values.role }}
+    version: {{ .Values.version }}
+spec:
+  type: LoadBalancer
+  selector:
+    role: {{ .Values.role }}
+    version: {{ .Values.version }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.serviceport }}
+

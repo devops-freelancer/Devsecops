@@ -1,0 +1,17 @@
+namespace: app
+role: api
+version: v1.0
+replicas: 2
+image: cloudacademydevops/api:v3
+containerport: 8080
+serviceport: 8080
+#connectionString: mongodb://mongo-0.mongo,mongo-1.mongo,mongo-2.mongo:27017/langdb?replicaSet=rs0
+
+
+# Istio values.yaml
+name: frontend
+subset1: blue
+subset2: green
+version2: v2.0
+weight1: 90
+weight2: 10
