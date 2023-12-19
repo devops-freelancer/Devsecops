@@ -9,7 +9,7 @@ metadata:
     role: {{ .Values.role }}
     version: {{ .Values.version }}
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     role: {{ .Values.role }}
     version: {{ .Values.version }}
