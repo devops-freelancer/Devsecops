@@ -32,8 +32,13 @@ pipeline {
   
 stage('Sonar Analysis') {
        steps {	
-	          	sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.organization=$SONAR_ORG -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_TOKEN'
-		        }}
+
+	       withSonarQubeEnv('SonarQube') {
+         sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.organization=$SONAR_ORG -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_TOKEN'
+		    
+                         }
+                    }
+             }
              
 stage('Unit Test maven') {
       steps { script {  sh 'mvn verify package'  }}
